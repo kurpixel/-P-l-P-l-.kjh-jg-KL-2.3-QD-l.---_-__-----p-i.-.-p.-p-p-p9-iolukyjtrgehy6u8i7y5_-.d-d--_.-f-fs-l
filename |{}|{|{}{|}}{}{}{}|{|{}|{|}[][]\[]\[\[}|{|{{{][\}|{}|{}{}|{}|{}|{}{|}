@@ -4,7 +4,7 @@ local decode = game:GetService('HttpService'):JSONDecode(thing)
 local str = '\n'
 for _, v in pairs(decode) do
 	if not v:find('https://') then
-		str = str .. '\n'.. v 
+		str = str .. '\n'.. v or str .. ''
 	end
 end
 local TeleportService = game:GetService("TeleportService")
